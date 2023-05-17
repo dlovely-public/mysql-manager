@@ -3,9 +3,15 @@ on:
   push:
     branches:
       - '**'
+    paths-ignore:
+      - 'packages/docs/**'
+      - 'packages/playground/**'
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - 'packages/docs/**'
+      - 'packages/playground/**'
 
 permissions:
   contents: read # to fetch code (actions/checkout)
@@ -28,8 +34,11 @@ jobs:
 
       - run: PUPPETEER_SKIP_DOWNLOAD=1 pnpm install
 
-      - name: Run unit tests
+      - name: Ru vitest
         run: pnpm run test
 
       - name: Run eslint
         run: pnpm run lint
+
+      - name: Run tsc
+        run: pnpm run check
