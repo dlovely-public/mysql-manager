@@ -2,26 +2,50 @@
   "name": "mysql-manager",
   "version": "0.0.1",
   "description": "",
-  "main": "lib/index.js",
-  "types": "types/index.d.ts",
+  "main": "index.js",
+  "module": "dist/mysql-manager.mjs",
+  "unpkg": "dist/mysql-manager.iife.js",
+  "jsdelivr": "dist/mysql-manager.iife.js",
+  "types": "dist/mysql-manager.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/mysql-manager.d.ts",
+      "node": {
+        "import": {
+          "production": "./dist/mysql-manager.prod.cjs",
+          "development": "./dist/mysql-manager.mjs",
+          "default": "./dist/mysql-manager.mjs"
+        },
+        "require": {
+          "production": "./dist/mysql-manager.prod.cjs",
+          "development": "./dist/mysql-manager.cjs",
+          "default": "./index.js"
+        }
+      },
+      "import": "./dist/mysql-manager.mjs",
+      "require": "./index.js"
+    },
+    "./package.json": "./package.json",
+    "./dist/*": "./dist/*"
+  },
   "scripts": {
-    "build": "pnpm build:compile && pnpm build:types",
-    "build:compile": "tsc --project ./.tsconfig.compile.json",
-    "build:types": "tsc --project ./.tsconfig.types.json"
+    "build": "rimraf dist && rollup -c ../../rollup.config.mjs --environment TARGET:mysql-manager",
+    "build:dts": "api-extractor run --local --verbose",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s --commit-path . -l pinia -r 1"
   },
   "keywords": [],
-  "authors": [
-    "1556468030@qq.com"
-  ],
+  "author": {
+    "name": "MZ-Dlovely",
+    "email": "1556468030@qq.com"
+  },
   "license": "MIT",
   "dependencies": {
-    "@mysql-manager/editor": "workspace:^",
-    "@mysql-manager/shared": "workspace:^",
     "mysql2": "^3.2.3"
   },
+  "devDependencies": {
+    "@microsoft/api-extractor": "^7.34.9"
+  },
   "peerDependencies": {
-    "@mysql-manager/editor": "workspace:^",
-    "@mysql-manager/shared": "workspace:^",
     "mysql2": "^3.2.3"
   }
 }

@@ -1,14 +1,14 @@
-export { createMysqlServer, createMysqlPool } from './mysql'
+export { createMysqlServer, createMysqlPool } from './manager/mysql'
 export type {
   MysqlServer,
   MysqlPool,
   MysqlInstace,
   ConnectionOptions,
   PoolOptions,
-} from './mysql'
+} from './manager/mysql'
 
-export { createDataBase } from './database'
-export type { DataBase, DataBaseOptions } from './database'
+export { createDataBase } from './manager/database'
+export type { DataBase, DataBaseOptions } from './manager/database'
 
-export { createTable } from './table'
-export type { Table } from './table'
+export { createTable } from './manager/table'
+export type { Table } from './manager/table'
