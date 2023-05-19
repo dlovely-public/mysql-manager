@@ -133,5 +133,10 @@ describe('Table', () => {
       readonly update_time: Date
       reviser?: number
     }>()
+    const select = () => table.select(['id', 'reviser'])
+    expectTypeOf(select).returns.resolves.items.toEqualTypeOf<{
+      readonly id: number
+      reviser?: number
+    }>()
   })
 })

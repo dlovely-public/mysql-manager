@@ -1,4 +1,3 @@
-export type TableColumns = readonly TableColumn[]
 export type TableColumn =
   | NumberColumn
   | StringColumn
@@ -6,6 +5,8 @@ export type TableColumn =
   | JsonColumn
   | CharColumn
   | EnumColumn
+export type TableColumns = readonly TableColumn[]
+export type TableColumnsRecord = Record<string, TableColumns>
 
 export type ColumnType<Column extends TableColumn> = Column extends NumberColumn
   ? number

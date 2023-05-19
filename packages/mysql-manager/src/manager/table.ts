@@ -4,6 +4,8 @@ import type {
   InsertColumns,
   UpdateColumns,
   SelectColumnsPick,
+  ColumnsName,
+  TableColumnsRecord,
 } from '../utils'
 import {
   formatInsert,
@@ -14,12 +16,13 @@ import {
 import type { Delete, Update, Select } from '../shared'
 import { DataBase } from './database'
 import type { OkPacket } from 'mysql2'
+import { JoinTable, JoinType } from './join-table'
 
-export class Table<Columns extends TableColumns> {
+export class Table<Name extends string, Columns extends TableColumns> {
   public readonly server
   constructor(
     public readonly database: DataBase,
-    public readonly name: string,
+    public readonly name: Name,
     columns: Columns
   ) {
     this.server = database.server
@@ -44,7 +47,6 @@ export class Table<Columns extends TableColumns> {
     columns?: Column[],
     where?: Select.Options['where'],
     options: Omit<Select.Options, 'table' | 'columns' | 'where'> = {}
-    // @ts-ignore
   ): Promise<SelectColumnsPick<Columns, Column>[]> {
     // TODO 对columns进行校验
     const sql = formatSelect({
@@ -84,6 +86,27 @@ export class Table<Columns extends TableColumns> {
       where,
     })
     return this.server.execute(sql)
+  }
+
+  public join<
+    CR extends TableColumnsRecord = never,
+    N extends string = never,
+    C extends TableColumns = never
+  >(
+    table: Table<N, C> | JoinTable<any, any, any, any, any, any, CR>,
+    key: ColumnsName<C, CR>,
+    self_key: ColumnsName<Columns, never>,
+    type: JoinType = JoinType.INNER
+  ) {
+    const join_table = new JoinTable(
+      this.server,
+      this,
+      self_key,
+      table,
+      key,
+      type
+    ) as JoinTable<never, CR, Name, Columns, N, C>
+    return join_table
   }
 }
 

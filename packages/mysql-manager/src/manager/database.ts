@@ -20,7 +20,7 @@ export class DataBase {
     return this._is_pool
   }
 
-  public readonly table_cache = new Map<string, Table<any>>()
+  public readonly table_cache = new Map<string, Table<string, any>>()
   public cleanUpCache(...keys: string[]) {
     if (keys.length) {
       for (const key of keys) {
@@ -30,16 +30,16 @@ export class DataBase {
       this.table_cache.clear()
     }
   }
-  public createTable<Columns extends TableColumns>(
-    name: string,
+  public createTable<Name extends string, Columns extends TableColumns>(
+    name: Name,
     columns: Columns
-  ): Table<Columns> {
+  ) {
     let table = this.table_cache.get(name)
     if (!table) {
       table = new Table(this, name, columns)
       this.table_cache.set(name, table)
     }
-    return table
+    return table as Table<Name, Columns>
   }
 
   // TODO 添加表

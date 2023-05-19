@@ -1,5 +1,33 @@
-import type { TableColumn, TableColumns, ColumnType } from './columns'
-import type { MergeRecord } from './type-utils'
+import type {
+  TableColumn,
+  TableColumns,
+  TableColumnsRecord,
+  ColumnType,
+} from './columns'
+import type { DPick, MergeRecord, UnionToIntersection } from './type-utils'
+
+export type TableColumnsName<Columns extends TableColumns> =
+  Columns[number]['name']
+export type TableColumnsRecordName<ColumnsRecord extends TableColumnsRecord> = {
+  [Table in keyof ColumnsRecord]: Table extends string
+    ? `${Table}.${TableColumnsName<ColumnsRecord[Table]>}`
+    : never
+}[keyof ColumnsRecord]
+export type ColumnsName<
+  Columns extends TableColumns = never,
+  ColumnsRecord extends TableColumnsRecord = never
+> =
+  | ([Columns] extends [never] ? never : TableColumnsName<Columns>)
+  | ([ColumnsRecord] extends [never]
+      ? never
+      : TableColumnsRecordName<ColumnsRecord>)
+
+export type TableColumnsRecordMap<ColumnsRecord extends TableColumnsRecord> =
+  ColumnsRecord extends TableColumnsRecord
+    ? {
+        [Table in keyof ColumnsRecord]: TableColumnsName<ColumnsRecord[Table]>[]
+      }
+    : never
 
 export type InsertColumns<Columns extends TableColumns> = MergeRecord<
   {
@@ -54,10 +82,28 @@ export type SelectColumns<Columns extends TableColumns> = MergeRecord<
 >
 export type SelectColumnsPick<
   Columns extends TableColumns,
-  Column extends Columns[number]['name']
+  Column extends TableColumnsName<Columns>
 > = [Column] extends [never]
   ? SelectColumns<Columns>
   : DPick<SelectColumns<Columns>, Column>
+export type SelectColumnsRecord<
+  ColumnsRecord extends TableColumnsRecord,
+  Column extends Partial<TableColumnsRecordMap<ColumnsRecord>>
+> = [Column] extends [never]
+  ? UnionToIntersection<
+      {
+        [Table in keyof ColumnsRecord]: SelectColumns<ColumnsRecord[Table]>
+      }[keyof ColumnsRecord]
+    >
+  : UnionToIntersection<
+      {
+        [Table in keyof Column]: Table extends keyof ColumnsRecord
+          ? Column[Table] extends Array<infer Col extends string>
+            ? SelectColumnsPick<ColumnsRecord[Table], Col>
+            : never
+          : never
+      }[keyof Column]
+    >
 
 type IsReadOnly<
   Column extends TableColumn,
@@ -78,8 +124,3 @@ type IsExist<
   True = true,
   False = false
 > = Column['not_null'] extends true ? True : False
-type DPick<T, K> = T extends any
-  ? {
-      [Key in keyof T as Key extends K ? Key : never]: T[Key]
-    }
-  : never
