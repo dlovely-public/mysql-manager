@@ -58,10 +58,10 @@ const outputConfigs = {
     file: pkg.module.replace('mjs', 'cjs'),
     format: `cjs`,
   },
-  // global: {
-  //   file: pkg.unpkg,
-  //   format: `iife`,
-  // },
+  global: {
+    file: pkg.unpkg,
+    format: `iife`,
+  },
   // browser: {
   //   file: 'dist/mysql-manager.esm-browser.js',
   //   format: `es`,
@@ -169,27 +169,15 @@ function createReplacePlugin(
   const replacements = {
     __COMMIT__: `"${process.env.COMMIT}"`,
     __VERSION__: `"${pkg.version}"`,
-    __DEV__:
-      (isBundlerESMBuild && !isRawESMBuild) || (isNodeBuild && !isProduction)
-        ? // preserve to be handled by bundlers
-          `(process.env.NODE_ENV !== 'production')`
-        : // hard coded dev/prod builds
-          JSON.stringify(!isProduction),
-    // this is only used during tests
-    __TEST__:
-      (isBundlerESMBuild && !isRawESMBuild) || isNodeBuild
-        ? `(process.env.NODE_ENV === 'test')`
-        : 'false',
-    __FEATURE_PROD_DEVTOOLS__: isBundlerESMBuild
-      ? `(typeof __VUE_PROD_DEVTOOLS__ !== 'undefined' && __VUE_PROD_DEVTOOLS__)`
-      : 'false',
-    // If the build is expected to run directly in the browser (global / esm builds)
-    __BROWSER__: JSON.stringify(isRawESMBuild),
+    __DEV__: String(!isProduction),
+    __TEST__: 'false',
+    __FEATURE_PROD_DEVTOOLS__: 'false',
+    __BROWSER__: String(isRawESMBuild),
     // is targeting bundlers?
-    __BUNDLER__: JSON.stringify(isBundlerESMBuild),
-    __GLOBAL__: JSON.stringify(isGlobalBuild),
+    __BUNDLER__: String(isBundlerESMBuild),
+    __GLOBAL__: String(isGlobalBuild),
     // is targeting Node (SSR)?
-    __NODE_JS__: JSON.stringify(isNodeBuild),
+    __NODE_JS__: String(isNodeBuild),
   }
   // allow inline overrides like
   //__RUNTIME_COMPILE__=true yarn build
@@ -208,10 +196,22 @@ function createReplacePlugin(
 function createProductionConfig(format) {
   const extension = format === 'cjs' ? 'cjs' : 'js'
   const descriptor = format === 'cjs' ? '' : `.${format}`
-  return createConfig(format, {
-    file: `dist/${name}${descriptor}.prod.${extension}`,
-    format: outputConfigs[format].format,
-  })
+  return createConfig(
+    format,
+    {
+      file: `dist/${name}${descriptor}.prod.${extension}`,
+      format: outputConfigs[format].format,
+    },
+    [
+      terser({
+        module: /^esm/.test(format),
+        compress: {
+          ecma: 2015,
+          pure_getters: true,
+        },
+      }),
+    ]
+  )
 }
 
 function createMinifiedConfig(format) {

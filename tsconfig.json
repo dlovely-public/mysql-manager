@@ -36,6 +36,6 @@
     "removeComments": false,
     "jsx": "preserve",
     "lib": ["esnext", "dom"],
-    "types": ["vitest", "node"]
+    "types": ["vitest", "node", "vitest/globals"]
   }
 }
