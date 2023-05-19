@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import { createMysqlServer, createMysqlPool } from '../../src/manager/mysql'
 import { createDataBase } from '../../src/manager/database'
 

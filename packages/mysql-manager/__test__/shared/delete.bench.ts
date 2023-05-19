@@ -1,4 +1,4 @@
-import { bench } from 'vitest'
+import { bench, describe } from 'vitest'
 import { formatDelete } from '../../src/shared'
 
 describe('where options', () => {

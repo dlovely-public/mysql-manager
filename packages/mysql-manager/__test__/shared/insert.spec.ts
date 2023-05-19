@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import { formatInsert } from '../../src/shared/insert'
 
 describe('insert', () => {

@@ -1,3 +1,4 @@
+import { describe, it, expect, expectTypeOf, beforeEach } from 'vitest'
 import { createMysqlServer } from '../../src/manager/mysql'
 import { createTable, OkPacket } from '../../src/manager/table'
 

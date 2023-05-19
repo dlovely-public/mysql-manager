@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import { formatSelect } from '../../src/shared/select'
 
 describe('select', () => {

@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import { formatWhere, formatWhereOptions } from '../../src/shared/where'
 
 describe('where', () => {

@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import { createMysqlServer, createMysqlPool } from '../../src/manager/mysql'
 import { default_config } from '../../src/manager/config'
 

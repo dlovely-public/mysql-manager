@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import { mergeConfig, default_config } from '../../src/manager/config'
 
 describe('config', () => {

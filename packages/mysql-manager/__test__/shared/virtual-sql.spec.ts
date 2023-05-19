@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import { isSql, formatSql, createSql } from '../../src/shared/virtual-sql'
 
 describe('virtual-sql', () => {
