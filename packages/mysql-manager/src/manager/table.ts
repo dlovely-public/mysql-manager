@@ -10,9 +10,8 @@ import {
   formatDelete,
   formatUpdate,
   formatSelect,
-  formatSql,
 } from '../shared'
-import type { Delete, Update, Select, SqlWithParams } from '../shared'
+import type { Delete, Update, Select } from '../shared'
 import { DataBase } from './database'
 import type { OkPacket } from 'mysql2'
 
@@ -41,12 +40,12 @@ export class Table<Columns extends TableColumns> {
     return [...this._json_keys.keys()]
   }
 
-  public async select<Column extends Columns[number]['name']>(
+  public select<Column extends Columns[number]['name']>(
     columns?: Column[],
     where?: Select.Options['where'],
     options: Omit<Select.Options, 'table' | 'columns' | 'where'> = {}
     // @ts-ignore
-  ) {
+  ): Promise<SelectColumnsPick<Columns, Column>[]> {
     // TODO 对columns进行校验
     const sql = formatSelect({
       ...options,
@@ -54,57 +53,37 @@ export class Table<Columns extends TableColumns> {
       columns,
       where,
     })
-    return this.execute<SelectColumnsPick<Columns, Column>>(sql)
+    return this.server.execute<SelectColumnsPick<Columns, Column>>(sql)
   }
 
-  public async insert(...datas: InsertColumns<Columns>[]) {
+  public insert(...datas: InsertColumns<Columns>[]): Promise<OkPacket> {
     const sql = formatInsert({
       table: this.name,
       datas,
       json_key: this._json_keys,
     })
-    return this.execute(sql)
+    return this.server.execute(sql)
   }
 
-  public async update(
+  public update(
     data: UpdateColumns<Columns>,
     where?: Update.Options['where']
-  ) {
+  ): Promise<OkPacket> {
     const sql = formatUpdate({
       table: this.name,
       data,
       where,
       json_key: this._json_keys,
     })
-    return this.execute(sql)
+    return this.server.execute(sql)
   }
 
-  public async delete(where: Delete.Options['where']) {
+  public delete(where: Delete.Options['where']): Promise<OkPacket> {
     const sql = formatDelete({
       table: this.name,
       where,
     })
-    return this.execute(sql)
-  }
-
-  public async execute(options: Partial<SqlWithParams>): Promise<OkPacket>
-  public async execute<T extends Record<string, unknown>>(
-    options: Partial<SqlWithParams>
-  ): Promise<T[]>
-  public async execute(options: Partial<SqlWithParams>) {
-    const { sql, params } = formatSql(options)
-    /* istanbul ignore else -- @preserve */
-    if (__TEST__) {
-      return { sql, params }
-    }
-    /* istanbul ignore next -- @preserve */
-    const { connection, release } = await this.server.getConnection()
-    /* istanbul ignore next -- @preserve */
-    const [result] = await connection.execute(sql, params)
-    /* istanbul ignore next -- @preserve */
-    release()
-    /* istanbul ignore next -- @preserve */
-    return result as any
+    return this.server.execute(sql)
   }
 }
 

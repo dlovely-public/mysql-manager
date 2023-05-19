@@ -1,4 +1,5 @@
 import { describe, it, expect, expectTypeOf, beforeEach } from 'vitest'
+import { execute } from './mysql-server'
 import { createMysqlServer } from '../../src/manager/mysql'
 import { createTable, OkPacket } from '../../src/manager/table'
 
@@ -91,7 +92,8 @@ describe('Table', () => {
   })
 
   it('insert', async () => {
-    expect(table.insert({ reviser: 0 })).resolves.toStrictEqual({
+    table.insert({ reviser: 0 })
+    expect(execute).toBeCalledWith({
       sql: 'INSERT INTO table (reviser) VALUES (?)',
       params: [0],
     })
@@ -102,9 +104,8 @@ describe('Table', () => {
   })
 
   it('delete', async () => {
-    expect(
-      table.delete({ key: 'id', val: 0, type: '=' })
-    ).resolves.toStrictEqual({
+    table.delete({ key: 'id', val: 0, type: '=' })
+    expect(execute).toBeCalledWith({
       sql: 'DELETE FROM table WHERE id=?',
       params: [0],
     })
@@ -112,9 +113,8 @@ describe('Table', () => {
   })
 
   it('update', async () => {
-    expect(
-      table.update({ reviser: 1 }, { key: 'id', val: 0, type: '=' })
-    ).resolves.toStrictEqual({
+    table.update({ reviser: 1 }, { key: 'id', val: 0, type: '=' })
+    expect(execute).toBeCalledWith({
       sql: 'UPDATE table SET reviser=? WHERE id=?',
       params: [1, 0],
     })
@@ -122,7 +122,8 @@ describe('Table', () => {
   })
 
   it('select', async () => {
-    expect(table.select()).resolves.toStrictEqual({
+    table.select()
+    expect(execute).toBeCalledWith({
       sql: 'SELECT * FROM table',
       params: [],
     })
@@ -132,16 +133,5 @@ describe('Table', () => {
       readonly update_time: Date
       reviser?: number
     }>()
-  })
-
-  it('execute', async () => {
-    const options = { sql: 'test', params: ['test'] }
-    expect(table.execute(options)).resolves.toStrictEqual(options)
-    expectTypeOf(() =>
-      table.execute({})
-    ).returns.resolves.toEqualTypeOf<OkPacket>()
-    expectTypeOf(() =>
-      table.execute<{ test: number }>({})
-    ).returns.resolves.toEqualTypeOf<{ test: number }[]>()
   })
 })

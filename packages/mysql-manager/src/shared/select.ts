@@ -18,6 +18,11 @@ export namespace Select {
     | number
     | [number, number]
     | { limit: number; offset: number }
+
+  export type JoinColumn = Record<string, string[]>
+  export interface JoinOptions extends Omit<Options, 'columns'> {
+    columns?: JoinColumn
+  }
 }
 
 export const formatSelect = (options: Select.Options): SqlWithParams => {
@@ -34,9 +39,30 @@ export const formatSelect = (options: Select.Options): SqlWithParams => {
   )
 }
 
+export const formatJoinSelect = (
+  options: Select.JoinOptions
+): SqlWithParams => {
+  const { columns: _columns, ..._options } = options
+  const columns = formatJoinColumns(_columns)
+  return formatSelect({ ..._options, columns })
+}
+
 function formatColums(columns?: Select.Options['columns']): string {
   if (!columns || !columns.length) return ' *'
   return ` ${columns.join()}`
+}
+
+function formatJoinColumns(
+  columns?: Select.JoinOptions['columns']
+): Select.Options['columns'] {
+  if (!columns) return
+  const _columns: Select.Options['columns'] = []
+  for (const [table, cols] of Object.entries(columns)) {
+    for (const col of cols) {
+      _columns.push(`${table}.${col}`)
+    }
+  }
+  return _columns
 }
 
 function formatDistinct(distinct?: Select.Options['distinct']): string {

@@ -15,7 +15,7 @@
     "test:bench": "vitest bench",
     "test:coverage": "vitest run --coverage",
     "test:type": "tsc --incremental --noEmit",
-    "check": "pnpm run test:type && pnpm run test:coverage && pnpm run test run",
+    "check": "pnpm run test:type && pnpm run test:coverage",
     "cleanup": "rimraf -rf node_modules && rimraf -rf dist",
     "preinstall": "node ./scripts/preinstall.js",
     "postinstall": "simple-git-hooks"

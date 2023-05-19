@@ -1,20 +1,17 @@
 import { createConnection, createPool } from 'mysql2/promise'
-import type { Connection, Pool } from 'mysql2/promise'
+import type { Connection, Pool, OkPacket } from 'mysql2/promise'
 import type { ConnectionOptions } from 'mysql2/typings/mysql/lib/Connection'
 import type { PoolOptions } from 'mysql2/typings/mysql/lib/Pool'
+import { formatSql } from '../shared'
+import type { SqlWithParams } from '../shared'
 import { DataBase } from './database'
 import { mergeConfig } from './config'
 
-export interface MysqlInstace {
-  readonly active: boolean
-  getConnection(): Promise<{
-    connection: Connection
-    release: () => void
-  }>
-  createDataBase(name: string): DataBase
-}
-
-class Mysql<Config extends ConnectionOptions | PoolOptions> {
+export class Mysql<
+  Config extends ConnectionOptions | PoolOptions =
+    | ConnectionOptions
+    | PoolOptions
+> {
   public config
   constructor(config?: Config, is_database = false) {
     is_database || (config && Reflect.deleteProperty(config, 'database'))
@@ -27,6 +24,36 @@ class Mysql<Config extends ConnectionOptions | PoolOptions> {
       this.config = _config
       cb?.()
     }
+  }
+
+  /* istanbul ignore next -- @preserve */
+  public async getConnection(): Promise<{
+    connection: Connection
+    release: () => void
+  }> {
+    throw new Error('not implemented')
+  }
+  /* istanbul ignore next -- @preserve */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public createDataBase(name: string): DataBase {
+    throw new Error('not implemented')
+  }
+
+  public async execute(options: Partial<SqlWithParams>): Promise<OkPacket>
+  public async execute<T extends Record<string, unknown>>(
+    options: Partial<SqlWithParams>
+  ): Promise<T[]>
+  /* istanbul ignore next -- @preserve */
+  public async execute(options: Partial<SqlWithParams>) {
+    const { sql, params } = formatSql(options)
+    /* istanbul ignore next -- @preserve */
+    const { connection, release } = await this.getConnection()
+    /* istanbul ignore next -- @preserve */
+    const [result] = await connection.execute(sql, params)
+    /* istanbul ignore next -- @preserve */
+    release()
+    /* istanbul ignore next -- @preserve */
+    return result as any
   }
 
   protected _active = true
@@ -57,10 +84,7 @@ class Mysql<Config extends ConnectionOptions | PoolOptions> {
   }
 }
 
-export class MysqlServer
-  extends Mysql<ConnectionOptions>
-  implements MysqlInstace
-{
+export class MysqlServer extends Mysql<ConnectionOptions> {
   public restart(config?: ConnectionOptions) {
     this._restart(config)
   }
@@ -88,7 +112,7 @@ export class MysqlServer
   }
 }
 
-export class MysqlPool extends Mysql<PoolOptions> implements MysqlInstace {
+export class MysqlPool extends Mysql<PoolOptions> {
   public restart(config?: PoolOptions) {
     this._restart(config, () => {
       this._pool = undefined
@@ -132,7 +156,7 @@ export const createMysqlPool = (config?: PoolOptions) => {
 
 export function useServer(is_pool: true): MysqlPool | null
 export function useServer(is_pool: false): MysqlServer | null
-export function useServer(is_pool: boolean): MysqlInstace | null
+export function useServer(is_pool: boolean): Mysql | null
 export function useServer(is_pool: boolean) {
   return is_pool ? active_mysql_pool : active_mysql_server
 }

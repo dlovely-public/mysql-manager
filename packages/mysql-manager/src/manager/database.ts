@@ -1,6 +1,6 @@
 import type { ConnectionOptions } from 'mysql2/typings/mysql/lib/Connection'
 import type { PoolOptions } from 'mysql2/typings/mysql/lib/Pool'
-import { MysqlInstace, useServer } from './mysql'
+import { Mysql, useServer } from './mysql'
 import { TableColumns } from '../utils'
 import { Table } from './table'
 
@@ -12,10 +12,7 @@ export type DataBaseOptions = Omit<
 
 export class DataBase {
   private readonly _is_pool
-  constructor(
-    public readonly server: MysqlInstace,
-    public readonly name: string
-  ) {
+  constructor(public readonly server: Mysql, public readonly name: string) {
     this._is_pool = 'pool' in server
   }
 

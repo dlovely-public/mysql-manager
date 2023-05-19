@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { formatSelect } from '../../src/shared/select'
+import { formatSelect, formatJoinSelect } from '../../src/shared/select'
 
 describe('select', () => {
   it('columns', () => {
@@ -77,6 +77,28 @@ describe('select', () => {
     ).toEqual({
       sql: 'SELECT * FROM table LIMIT ? OFFSET ?',
       params: [10, 20],
+    })
+  })
+})
+
+describe('join select', () => {
+  it('columns', () => {
+    expect(formatJoinSelect({ table: 'table' })).toEqual({
+      sql: 'SELECT * FROM table',
+      params: [],
+    })
+    expect(formatJoinSelect({ table: 'table', columns: {} })).toEqual({
+      sql: 'SELECT * FROM table',
+      params: [],
+    })
+    expect(
+      formatJoinSelect({
+        table: 'table',
+        columns: { table_1: ['id'], table_2: ['name'] },
+      })
+    ).toEqual({
+      sql: 'SELECT table_1.id,table_2.name FROM table',
+      params: [],
     })
   })
 })

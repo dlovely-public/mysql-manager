@@ -2,7 +2,7 @@ export { createMysqlServer, createMysqlPool } from './manager/mysql'
 export type {
   MysqlServer,
   MysqlPool,
-  MysqlInstace,
+  Mysql,
   ConnectionOptions,
   PoolOptions,
 } from './manager/mysql'

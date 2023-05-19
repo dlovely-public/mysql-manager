@@ -78,6 +78,8 @@ type IsExist<
   True = true,
   False = false
 > = Column['not_null'] extends true ? True : False
-type DPick<T, K> = {
-  [Key in keyof T as Key extends K ? Key : never]: T[Key]
-}
+type DPick<T, K> = T extends any
+  ? {
+      [Key in keyof T as Key extends K ? Key : never]: T[Key]
+    }
+  : never

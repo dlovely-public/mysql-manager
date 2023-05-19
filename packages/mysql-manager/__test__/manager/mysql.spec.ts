@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { execute } from './mysql-server'
 import { createMysqlServer, createMysqlPool } from '../../src/manager/mysql'
 import { default_config } from '../../src/manager/config'
 
@@ -37,5 +38,12 @@ describe('mysql', () => {
     const pool_3 = createMysqlPool({ user: 'root' })
     expect(pool_3).toBe(pool_1)
     expect(pool_3).toBe(pool_2)
+  })
+
+  it('mysql execute', async ({ expect }) => {
+    const server = createMysqlServer()
+    const result = await server.execute({ sql: 'SELECT 1' })
+    expect(execute).toBeCalledWith({ sql: 'SELECT 1' })
+    expect(result).toStrictEqual({ sql: 'SELECT 1', params: [] })
   })
 })
