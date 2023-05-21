@@ -63,7 +63,7 @@ const outputConfigs = {
   //   format: `iife`,
   // },
   // browser: {
-  //   file: 'dist/mysql-manager.esm-browser.js',
+  //   file: 'dist/@dlovely/mysql.esm-browser.js',
   //   format: `es`,
   // },
 }

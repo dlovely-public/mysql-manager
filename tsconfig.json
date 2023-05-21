@@ -12,8 +12,7 @@
     "sourceMap": false,
     "noEmit": true,
     "paths": {
-      "@mysql-manager/*": ["packages/*/src"],
-      "mysql-manager": ["packages/mysql-manager/src"]
+      "@dlovely/mysql": ["packages/mysql-manager/src"]
     },
 
     "target": "esnext",

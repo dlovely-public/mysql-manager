@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "mysql-manager",
+  "name": "@dlovely/mysql",
   "version": "0.0.1",
   "packageManager": "pnpm@7.26.0",
   "type": "module",

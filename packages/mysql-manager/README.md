@@ -19,11 +19,11 @@
 
 ```sh
 # npm
-$ npm install --save mysql-manager
+$ npm install --save @dlovely/mysql
 # yarn
-$ yarn add mysql-manager
+$ yarn add @dlovely/mysql
 # pnpm
-$ pnpm add mysql-manager
+$ pnpm add @dlovely/mysql
 ```
 
 ### 使用
@@ -35,7 +35,7 @@ export const table1_columns = [
   { name: 'name', readonly: false, not_null: true, has_defa: false }
 ]
 // mysql.ts
-import { createMySqlPool } from 'mysql-manager'
+import { createMySqlPool } from '@dlovely/mysql'
 import { table1_columns } from './mysql-table'
 
 const server = createMySqlPool()
