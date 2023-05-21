@@ -58,10 +58,10 @@ const outputConfigs = {
     file: pkg.module.replace('mjs', 'cjs'),
     format: `cjs`,
   },
-  global: {
-    file: pkg.unpkg,
-    format: `iife`,
-  },
+  // global: {
+  //   file: pkg.unpkg,
+  //   format: `iife`,
+  // },
   // browser: {
   //   file: 'dist/mysql-manager.esm-browser.js',
   //   format: `es`,

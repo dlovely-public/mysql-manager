@@ -260,7 +260,7 @@ async function updateVersions(packageList) {
             dependencies: pkg.dependencies,
             peerDependencies: pkg.peerDependencies,
           })
-        : fs.writeFile(join(path, 'package.json'), content)
+        : fs.writeFile(join(path, 'package.json'), content, 'utf-8')
     })
   )
 }
