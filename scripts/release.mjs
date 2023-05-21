@@ -1,6 +1,6 @@
 import minimist from 'minimist'
 import fs, { readdir } from 'node:fs/promises'
-import { join, dirname } from 'node:path'
+import { join, resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import chalk from 'chalk'
 import semver from 'semver'
@@ -174,18 +174,18 @@ async function main() {
   step('\n更新lock文件')
   await runIfNotDry(`pnpm`, ['install'])
 
-  // step('\n生成更新日志')
-  // for (const pkg of pkgWithVersions) {
-  //   step(` -> ${pkg.name} (${pkg.path})`)
-  //   await runIfNotDry(`pnpm`, ['run', 'changelog'], { cwd: pkg.path })
-  //   await runIfNotDry(`pnpm`, ['exec', 'prettier', '--write', 'CHANGELOG.md'], {
-  //     cwd: pkg.path,
-  //   })
-  //   await fs.copyFile(
-  //     resolve(__dirname, '../LICENSE'),
-  //     resolve(pkg.path, 'LICENSE')
-  //   )
-  // }
+  step('\n生成更新日志')
+  for (const pkg of pkgWithVersions) {
+    step(` -> ${pkg.name} (${pkg.path})`)
+    await runIfNotDry(`pnpm`, ['run', 'changelog'], { cwd: pkg.path })
+    await runIfNotDry(`pnpm`, ['exec', 'prettier', '--write', 'CHANGELOG.md'], {
+      cwd: pkg.path,
+    })
+    await fs.copyFile(
+      resolve(__dirname, '../LICENSE'),
+      resolve(pkg.path, 'LICENSE')
+    )
+  }
 
   // 核对确认更新日志
   // @ts-ignore
