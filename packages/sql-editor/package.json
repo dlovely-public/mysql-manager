@@ -4,8 +4,6 @@
   "description": "sql编辑器",
   "main": "index.js",
   "module": "dist/index.mjs",
-  "unpkg": "dist/index.iife.js",
-  "jsdelivr": "dist/index.iife.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {

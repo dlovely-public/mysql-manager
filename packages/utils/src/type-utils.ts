@@ -1,4 +1,4 @@
-export const compare = (num_1: number, num_2: number) =>
+export const compare = (num_1: number, num_2: number): [number, number] =>
   num_1 < num_2 ? [num_1, num_2] : [num_2, num_1]
 
 export const fill = (count: number, slot = '?') =>

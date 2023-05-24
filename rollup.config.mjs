@@ -23,7 +23,6 @@ const packageDir = resolve(packagesDir, process.env.TARGET)
 const pkg = JSON.parse(
   readFileSync(resolve(packageDir, `package.json`), 'utf-8')
 )
-const name = pkg.name
 
 function getAuthors(pkg) {
   const { contributors, author } = pkg
@@ -44,12 +43,9 @@ const banner = `/*!
   * @license MIT
   */`
 
-// ensure TS checks only once for each build
 let hasTSChecked = false
 
 const outputConfigs = {
-  // each file name has the format: `dist/${name}.${format}.js`
-  // format being a key of this object
   mjs: {
     file: pkg.module,
     format: `es`,
@@ -58,14 +54,6 @@ const outputConfigs = {
     file: pkg.module.replace('mjs', 'cjs'),
     format: `cjs`,
   },
-  // global: {
-  //   file: pkg.unpkg,
-  //   format: `iife`,
-  // },
-  // browser: {
-  //   file: 'dist/@dlovely/mysql.esm-browser.js',
-  //   format: `es`,
-  // },
 }
 
 const packageBuilds = Object.keys(outputConfigs)
@@ -115,7 +103,7 @@ function createConfig(buildName, output, plugins = []) {
         declaration: shouldEmitDeclarations,
         declarationMap: shouldEmitDeclarations,
       },
-      exclude: ['*.spec.ts', '*.bench.ts'],
+      exclude: ['**/__test__/*.ts'],
     },
   })
   // we only need to check TS and generate declarations once for each build.
@@ -128,6 +116,9 @@ function createConfig(buildName, output, plugins = []) {
     'mysql2/promise',
     'mysql2/typings/mysql/lib/Pool',
     'mysql2/typings/mysql/lib/Connection',
+    '@dlovely/mysql',
+    '@dlovely/sql-editor',
+    '@dlovely/utils',
   ]
 
   const nodePlugins = [nodeResolve(), commonjs()]
@@ -199,7 +190,7 @@ function createProductionConfig(format) {
   return createConfig(
     format,
     {
-      file: `dist/${name}${descriptor}.prod.${extension}`,
+      file: `dist/index${descriptor}.prod.${extension}`,
       format: outputConfigs[format].format,
     },
     [
@@ -218,7 +209,7 @@ function createMinifiedConfig(format) {
   return createConfig(
     format,
     {
-      file: `dist/${name}.${format === 'global' ? 'iife' : format}.prod.js`,
+      file: `dist/index.${format === 'global' ? 'iife' : format}.prod.js`,
       format: outputConfigs[format].format,
     },
     [
