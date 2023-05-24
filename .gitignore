@@ -2,6 +2,7 @@ dist
 lib
 types
 .DS_Store
+.vscode
 node_modules
 coverage
 temp
