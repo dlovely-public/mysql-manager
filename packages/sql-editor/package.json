@@ -1,0 +1,55 @@
+{
+  "name": "@dlovely/sql-editor",
+  "version": "1.0.0",
+  "description": "sql编辑器",
+  "main": "index.js",
+  "module": "dist/index.mjs",
+  "unpkg": "dist/index.iife.js",
+  "jsdelivr": "dist/index.iife.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "node": {
+        "import": {
+          "production": "./dist/index.prod.cjs",
+          "development": "./dist/index.mjs",
+          "default": "./dist/index.mjs"
+        },
+        "require": {
+          "production": "./dist/index.prod.cjs",
+          "development": "./dist/index.cjs",
+          "default": "./index.js"
+        }
+      },
+      "import": "./dist/index.mjs",
+      "require": "./index.js"
+    },
+    "./package.json": "./package.json",
+    "./dist/*": "./dist/*"
+  },
+  "scripts": {
+    "build": "rimraf dist && rollup -c ../../rollup.config.mjs --environment TARGET:sql-editor",
+    "build:dts": "api-extractor run --local --verbose",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s --commit-path . -l @dlovely/sql-editor -r 1"
+  },
+  "keywords": [
+    "dlovely",
+    "sql",
+    "editor"
+  ],
+  "author": {
+    "name": "MZ-Dlovely",
+    "email": "591562538@qq.com"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@dlovely/utils": "workspace:^"
+  },
+  "devDependencies": {
+    "@microsoft/api-extractor": "^7.34.9"
+  },
+  "peerDependencies": {
+    "@dlovely/utils": "workspace:^"
+  }
+}

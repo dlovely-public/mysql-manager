@@ -1,0 +1,6 @@
+__test__
+dist/packages
+node_modules
+src
+api-extractor.json
+CHANGELOG.md
