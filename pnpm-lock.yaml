@@ -107,21 +107,11 @@ importers:
   packages/mysql:
     dependencies:
       '@dlovely/sql-editor':
-        specifier: workspace:^
+        specifier: '>=1.0.1'
         version: link:../sql-editor
       '@dlovely/utils':
-        specifier: workspace:^
+        specifier: '>=1.0.1'
         version: link:../utils
-      mysql2:
-        specifier: ^3.2.3
-        version: 3.2.3
-    devDependencies:
-      '@microsoft/api-extractor':
-        specifier: ^7.34.9
-        version: 7.34.9(@types/node@18.15.11)
-
-  packages/mysql-manager:
-    dependencies:
       mysql2:
         specifier: ^3.2.3
         version: 3.2.3
@@ -133,7 +123,7 @@ importers:
   packages/sql-editor:
     dependencies:
       '@dlovely/utils':
-        specifier: workspace:^
+        specifier: '>=1.0.1'
         version: link:../utils
     devDependencies:
       '@microsoft/api-extractor':
