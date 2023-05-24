@@ -219,9 +219,9 @@ async function main() {
     await runIfNotDry('git', [
       'commit',
       '-m',
-      `release: ${pkgWithVersions
-        .map(({ name, version }) => `${name}@${version}`)
-        .join(' ')}`,
+      `release: 更新包版本\n${pkgWithVersions
+        .map(({ name, version }) => `- ${name}@${version}`)
+        .join('\n')}`,
     ])
   } else {
     console.log('No changes to commit.')
