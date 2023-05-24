@@ -1,10 +1,10 @@
 {
   "include": [
-    "packages/mysql-manager/src/global.d.ts",
+    "packages/mysql/src/global.d.ts",
     "packages/*/src/**/*.ts",
-    "packages/*/__tests__/**/*.ts"
+    "packages/*/__test__/**/*.ts"
   ],
-  "exclude": ["packages/test-vue-2", "packages/nuxt"],
+  "exclude": [],
   "compilerOptions": {
     "baseUrl": ".",
     "rootDir": ".",
@@ -12,7 +12,9 @@
     "sourceMap": false,
     "noEmit": true,
     "paths": {
-      "@dlovely/mysql": ["packages/mysql-manager/src"]
+      "@dlovely/mysql": ["packages/mysql/src"],
+      "@dlovely/sql-editor": ["./packages/sql-editor/src"],
+      "@dlovely/utils": ["./packages/utils/src"]
     },
 
     "target": "esnext",
