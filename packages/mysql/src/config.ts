@@ -1,5 +1,5 @@
 const host = process.env.MYSQL_HOST || 'localhost'
-const port = Number(process.env.MYSQL_HOST || '3306')
+const port = Number(process.env.MYSQL_PORT || '3306')
 
 export const default_config = { host, port }
 export default { host, port }
@@ -15,3 +15,5 @@ export function mergeConfig<Config extends ConnectionOptions | PoolOptions>(
     ...config,
   }
 }
+
+export type { ConnectionOptions, PoolOptions }

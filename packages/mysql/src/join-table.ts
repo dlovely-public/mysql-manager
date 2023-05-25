@@ -93,6 +93,39 @@ export class JoinTable<
     ) as JoinTable<TCR, CR, never, never, N, C>
     return join_table
   }
+  public leftJoin<
+    CR extends TableColumnsRecord = never,
+    N extends string = never,
+    C extends TableColumns = never
+  >(
+    table: Table<N, C> | JoinTable<any, any, any, any, any, any, CR>,
+    key: ColumnsName<C, CR>,
+    self_key: ColumnsName<never, TCR>
+  ) {
+    return this.join(table, key, self_key, JoinType.LEFT)
+  }
+  public rightJoin<
+    CR extends TableColumnsRecord = never,
+    N extends string = never,
+    C extends TableColumns = never
+  >(
+    table: Table<N, C> | JoinTable<any, any, any, any, any, any, CR>,
+    key: ColumnsName<C, CR>,
+    self_key: ColumnsName<never, TCR>
+  ) {
+    return this.join(table, key, self_key, JoinType.RIGHT)
+  }
+  public fullJoin<
+    CR extends TableColumnsRecord = never,
+    N extends string = never,
+    C extends TableColumns = never
+  >(
+    table: Table<N, C> | JoinTable<any, any, any, any, any, any, CR>,
+    key: ColumnsName<C, CR>,
+    self_key: ColumnsName<never, TCR>
+  ) {
+    return this.join(table, key, self_key, JoinType.FULL)
+  }
 
   public select<Column extends Partial<TableColumnsRecordMap<TCR>>>(
     columns?: Column,
@@ -112,6 +145,30 @@ export class JoinTable<
   // public get __showTCR(): TCR {
   //   return null as any
   // }
+}
+
+export const createJoinTable = <
+  LCR extends TableColumnsRecord = never,
+  RCR extends TableColumnsRecord = never,
+  LN extends string = never,
+  LC extends TableColumns = never,
+  RN extends string = never,
+  RC extends TableColumns = never
+>(
+  left_table: Table<LN, LC> | JoinTable<any, any, any, any, any, any, LCR>,
+  left_key: ColumnsName<LC, LCR>,
+  right_table: Table<RN, RC> | JoinTable<any, any, any, any, any, any, RCR>,
+  right_key: ColumnsName<RC, RCR>,
+  join_type: JoinType
+) => {
+  return new JoinTable(
+    left_table.server,
+    left_table,
+    left_key,
+    right_table,
+    right_key,
+    join_type
+  )
 }
 
 export enum JoinType {

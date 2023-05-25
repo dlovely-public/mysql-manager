@@ -1,11 +1,10 @@
 import { createConnection, createPool } from 'mysql2/promise'
 import type { Connection, Pool, OkPacket } from 'mysql2/promise'
-import type { ConnectionOptions } from 'mysql2/typings/mysql/lib/Connection'
-import type { PoolOptions } from 'mysql2/typings/mysql/lib/Pool'
 import { formatSql } from '@dlovely/sql-editor'
 import type { SqlWithParams } from '@dlovely/sql-editor'
 import { DataBase } from './database'
 import { mergeConfig } from './config'
+import type { ConnectionOptions, PoolOptions } from './config'
 
 export class Mysql<
   Config extends ConnectionOptions | PoolOptions =
@@ -160,5 +159,3 @@ export function useServer(is_pool: boolean): Mysql | null
 export function useServer(is_pool: boolean) {
   return is_pool ? active_mysql_pool : active_mysql_server
 }
-
-export type { ConnectionOptions, PoolOptions }
