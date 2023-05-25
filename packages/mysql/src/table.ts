@@ -110,6 +110,39 @@ export class Table<Name extends string, Columns extends TableColumns> {
     ) as JoinTable<never, CR, Name, Columns, N, C>
     return join_table
   }
+  public leftJoin<
+    CR extends TableColumnsRecord = never,
+    N extends string = never,
+    C extends TableColumns = never
+  >(
+    table: Table<N, C> | JoinTable<any, any, any, any, any, any, CR>,
+    key: ColumnsName<C, CR>,
+    self_key: ColumnsName<Columns, never>
+  ) {
+    return this.join(table, key, self_key, JoinType.LEFT)
+  }
+  public rightJoin<
+    CR extends TableColumnsRecord = never,
+    N extends string = never,
+    C extends TableColumns = never
+  >(
+    table: Table<N, C> | JoinTable<any, any, any, any, any, any, CR>,
+    key: ColumnsName<C, CR>,
+    self_key: ColumnsName<Columns, never>
+  ) {
+    return this.join(table, key, self_key, JoinType.RIGHT)
+  }
+  public fullJoin<
+    CR extends TableColumnsRecord = never,
+    N extends string = never,
+    C extends TableColumns = never
+  >(
+    table: Table<N, C> | JoinTable<any, any, any, any, any, any, CR>,
+    key: ColumnsName<C, CR>,
+    self_key: ColumnsName<Columns, never>
+  ) {
+    return this.join(table, key, self_key, JoinType.FULL)
+  }
 }
 
 export const createTable = <Columns extends TableColumns>(

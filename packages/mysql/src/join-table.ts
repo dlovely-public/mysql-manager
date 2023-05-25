@@ -93,6 +93,39 @@ export class JoinTable<
     ) as JoinTable<TCR, CR, never, never, N, C>
     return join_table
   }
+  public leftJoin<
+    CR extends TableColumnsRecord = never,
+    N extends string = never,
+    C extends TableColumns = never
+  >(
+    table: Table<N, C> | JoinTable<any, any, any, any, any, any, CR>,
+    key: ColumnsName<C, CR>,
+    self_key: ColumnsName<never, TCR>
+  ) {
+    return this.join(table, key, self_key, JoinType.LEFT)
+  }
+  public rightJoin<
+    CR extends TableColumnsRecord = never,
+    N extends string = never,
+    C extends TableColumns = never
+  >(
+    table: Table<N, C> | JoinTable<any, any, any, any, any, any, CR>,
+    key: ColumnsName<C, CR>,
+    self_key: ColumnsName<never, TCR>
+  ) {
+    return this.join(table, key, self_key, JoinType.RIGHT)
+  }
+  public fullJoin<
+    CR extends TableColumnsRecord = never,
+    N extends string = never,
+    C extends TableColumns = never
+  >(
+    table: Table<N, C> | JoinTable<any, any, any, any, any, any, CR>,
+    key: ColumnsName<C, CR>,
+    self_key: ColumnsName<never, TCR>
+  ) {
+    return this.join(table, key, self_key, JoinType.FULL)
+  }
 
   public select<Column extends Partial<TableColumnsRecordMap<TCR>>>(
     columns?: Column,
