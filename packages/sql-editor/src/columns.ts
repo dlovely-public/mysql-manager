@@ -40,6 +40,8 @@ export interface NumberColumn extends BaseColumn {
     | 'mediumint'
     | 'bigint'
     | 'bool'
+    | 'float'
+    | 'double'
 }
 export interface StringColumn extends BaseColumn {
   readonly type:

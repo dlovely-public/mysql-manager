@@ -1,7 +1,7 @@
 import type { ConnectionOptions } from 'mysql2/typings/mysql/lib/Connection'
 import type { PoolOptions } from 'mysql2/typings/mysql/lib/Pool'
 import { Mysql, useServer } from './mysql'
-import { TableColumns } from '@dlovely/sql-editor'
+import { TableColumns, createSql } from '@dlovely/sql-editor'
 import { Table } from './table'
 
 export type DataBaseOptions = Omit<
@@ -42,7 +42,13 @@ export class DataBase {
     return table as Table<Name, Columns>
   }
 
-  // TODO 添加表
+  public create() {
+    return this.server.execute(createSql(`CREATE DATABASE ${this.name}`))
+  }
+
+  public drop() {
+    return this.server.execute(createSql(`DROP DATABASE ${this.name}`))
+  }
 }
 
 export const createDataBase = (name: string, is_pool = true) => {

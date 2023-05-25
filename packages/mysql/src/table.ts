@@ -1,7 +1,8 @@
-import type {
+import {
   Delete,
   Update,
   Select,
+  Create,
   TableColumn,
   TableColumns,
   InsertColumns,
@@ -9,12 +10,14 @@ import type {
   SelectColumnsPick,
   ColumnsName,
   TableColumnsRecord,
+  createSql,
 } from '@dlovely/sql-editor'
 import {
   formatInsert,
   formatDelete,
   formatUpdate,
   formatSelect,
+  formatCreate,
 } from '@dlovely/sql-editor'
 import { DataBase } from './database'
 import type { OkPacket } from 'mysql2'
@@ -88,6 +91,22 @@ export class Table<Name extends string, Columns extends TableColumns> {
       where,
     })
     return this.server.execute(sql)
+  }
+
+  public create(options: Omit<Create.Options, 'name' | 'database'>) {
+    const sql = formatCreate({
+      ...options,
+      name: this.name,
+      database: this.database.name,
+    })
+    return this.server.execute(sql)
+  }
+
+  public truncate() {
+    return this.server.execute(createSql(`TRUNCATE TABLE ${this.name}`))
+  }
+  public drop() {
+    return this.server.execute(createSql(`DROP TABLE ${this.name}`))
   }
 
   public join<
