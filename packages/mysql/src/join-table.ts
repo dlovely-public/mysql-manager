@@ -147,6 +147,30 @@ export class JoinTable<
   // }
 }
 
+export const createJoinTable = <
+  LCR extends TableColumnsRecord = never,
+  RCR extends TableColumnsRecord = never,
+  LN extends string = never,
+  LC extends TableColumns = never,
+  RN extends string = never,
+  RC extends TableColumns = never
+>(
+  left_table: Table<LN, LC> | JoinTable<any, any, any, any, any, any, LCR>,
+  left_key: ColumnsName<LC, LCR>,
+  right_table: Table<RN, RC> | JoinTable<any, any, any, any, any, any, RCR>,
+  right_key: ColumnsName<RC, RCR>,
+  join_type: JoinType
+) => {
+  return new JoinTable(
+    left_table.server,
+    left_table,
+    left_key,
+    right_table,
+    right_key,
+    join_type
+  )
+}
+
 export enum JoinType {
   INNER = 'INNER',
   LEFT = 'LEFT',
