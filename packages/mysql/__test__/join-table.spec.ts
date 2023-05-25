@@ -1,7 +1,7 @@
 import { describe, it, expect, expectTypeOf } from 'vitest'
 import { execute } from './mysql-server'
 import { createMysqlPool, createMysqlServer } from '../src/mysql'
-import { JoinType } from '../src/join-table'
+import { JoinType, createJoinTable } from '../src/join-table'
 
 describe('join table', () => {
   const server = createMysqlServer()
@@ -112,6 +112,42 @@ ON table1.id=table3.id'
     )
   })
 
+  it('left join', () => {
+    const join_table = table1.leftJoin(table2, 'id', 'id')
+    expect(join_table.name).toBe(
+      'table1 LEFT JOIN table2 ON table1.id=table2.id'
+    )
+    const more_join_table = join_table.leftJoin(table3, 'id', 'table1.id')
+    expect(more_join_table.name).toBe(
+      '(table1 LEFT JOIN table2 ON table1.id=table2.id) \
+LEFT JOIN table3 ON table1.id=table3.id'
+    )
+  })
+
+  it('right join', () => {
+    const join_table = table1.rightJoin(table2, 'id', 'id')
+    expect(join_table.name).toBe(
+      'table1 RIGHT JOIN table2 ON table1.id=table2.id'
+    )
+    const more_join_table = join_table.rightJoin(table3, 'id', 'table1.id')
+    expect(more_join_table.name).toBe(
+      '(table1 RIGHT JOIN table2 ON table1.id=table2.id) \
+RIGHT JOIN table3 ON table1.id=table3.id'
+    )
+  })
+
+  it('full join', () => {
+    const join_table = table1.fullJoin(table2, 'id', 'id')
+    expect(join_table.name).toBe(
+      'table1 FULL JOIN table2 ON table1.id=table2.id'
+    )
+    const more_join_table = join_table.fullJoin(table3, 'id', 'table1.id')
+    expect(more_join_table.name).toBe(
+      '(table1 FULL JOIN table2 ON table1.id=table2.id) \
+FULL JOIN table3 ON table1.id=table3.id'
+    )
+  })
+
   it('select', () => {
     const join_table = table1.join(table2, 'id', 'id')
     const select = () => join_table.select({ table1: ['id'], table2: ['age'] })
@@ -131,5 +167,17 @@ ON table1.id=table3.id'
       readonly id: number
       age: number
     }>()
+  })
+
+  it('create', () => {
+    const join_table = table1.join(table2, 'id', 'id')
+    const other_join_table = createJoinTable(
+      table1,
+      'id',
+      table2,
+      'id',
+      JoinType.INNER
+    )
+    expect(join_table).toEqual(other_join_table)
   })
 })
