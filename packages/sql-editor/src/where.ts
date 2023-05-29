@@ -6,24 +6,24 @@ export namespace Where {
   export type Options = Single | Unions
 
   export type CompareType = '=' | '<>' | '<' | '<=' | '>' | '>='
-  export interface Compare {
+  interface Compare {
     key: string
     val: any
     type: CompareType
   }
 
-  export interface Like {
+  interface Like {
     key: string
     like: string
   }
 
-  export interface Between {
+  interface Between {
     key: string
     min: number
     max: number
   }
 
-  export interface In {
+  interface In {
     key: string
     vals: any[]
   }

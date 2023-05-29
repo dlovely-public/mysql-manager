@@ -5,6 +5,7 @@ import { type Where, formatWhereOptions } from './where'
 
 export namespace Update {
   export interface Options {
+    database?: string
     table: string
     data: Record<string, unknown>
     where?: Sql | Where.Options
@@ -13,7 +14,7 @@ export namespace Update {
 }
 
 export const formatUpdate = (options: Update.Options): SqlWithParams => {
-  const { table, data, where, json_key } = options
+  const { database, table, data, where, json_key } = options
   const keys = [] as string[],
     vals = [] as unknown[]
   for (const key in data) {
@@ -31,8 +32,9 @@ export const formatUpdate = (options: Update.Options): SqlWithParams => {
     vals.push(defa)
   })
   const { sql, params } = formatWhereOptions(where)
+  const _table = database ? `${database}.${table}` : table
   return createSql(
-    `UPDATE ${table} SET ${keys.map(key => `${key}=?`).join()}${sql}`,
+    `UPDATE ${_table} SET ${keys.map(key => `${key}=?`).join()}${sql}`,
     ...vals,
     ...params
   )

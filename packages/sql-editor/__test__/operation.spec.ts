@@ -15,45 +15,42 @@ import {
 } from '../src/operation'
 
 describe('operation', () => {
-  const columns1 = [
+  type Columns1 = [
     {
-      name: 'id',
-      type: 'int',
-      not_null: true,
-      has_defa: false,
-      readonly: true,
+      name: 'id'
+      type: number
+      not_null: true
+      has_defa: false
+      readonly: true
     },
     {
-      name: 'name',
-      type: 'text',
-      not_null: false,
-      has_defa: false,
-      readonly: false,
-    },
-  ] as const
-  type Columns1 = typeof columns1
-  const columns2 = [
+      name: 'name'
+      type: string
+      not_null: false
+      has_defa: false
+      readonly: false
+    }
+  ]
+  type Columns2 = [
     {
-      name: 'age',
-      type: 'int',
-      not_null: true,
-      has_defa: true,
-      readonly: false,
+      name: 'age'
+      type: number
+      not_null: true
+      has_defa: true
+      readonly: false
     },
     {
-      name: 'sex',
-      type: 'bool',
-      not_null: true,
-      has_defa: false,
-      readonly: false,
-    },
-  ] as const
-  type Columns2 = typeof columns2
-  const columns_record = {
-    columns1,
-    columns2,
+      name: 'sex'
+      type: number
+      not_null: true
+      has_defa: false
+      readonly: false
+    }
+  ]
+  type ColumnsRecord = {
+    columns1: Columns1
+    columns2: Columns2
   }
-  type ColumnsRecord = typeof columns_record
 
   it('TableColumnsName', () => {
     expectTypeOf<TableColumnsName<Columns1>>().toEqualTypeOf<'id' | 'name'>()

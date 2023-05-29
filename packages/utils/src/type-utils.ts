@@ -10,6 +10,11 @@ export type DoPick<T, K> = T extends any
     }
   : never
 
+export type Split<
+  T extends string,
+  D extends string = '.'
+> = T extends `${infer F}${D}${infer L}` ? [F, ...Split<L, D>] : [T]
+
 export type MergeRecord<T extends Record<PropertyKey, unknown>> =
   T extends Record<PropertyKey, unknown>
     ? {
@@ -30,3 +35,29 @@ export type UnionToIntersection<U extends Record<PropertyKey, unknown>> = (
 ) extends (k: infer I extends Record<PropertyKey, unknown>) => void
   ? MergeRecord<I>
   : never
+
+/**
+ * UnionToIntersection<{ foo: string } | { bar: string }> =
+ *  { foo: string } & { bar: string }.
+ */
+type UnionToIntersection2<U> = (
+  U extends unknown ? (arg: U) => 0 : never
+) extends (arg: infer I) => 0
+  ? I
+  : never
+
+/**
+ * LastInUnion<1 | 2> = 2.
+ */
+type LastInUnion<U> = UnionToIntersection2<
+  U extends unknown ? (x: U) => 0 : never
+> extends (x: infer L) => 0
+  ? L
+  : never
+
+/**
+ * UnionToTuple<1 | 2> = [1, 2].
+ */
+export type UnionToTuple<U, Last = LastInUnion<U>> = [U] extends [never]
+  ? []
+  : [...UnionToTuple<Exclude<U, Last>>, Last]

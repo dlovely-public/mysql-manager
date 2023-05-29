@@ -1,9 +1,4 @@
-import type {
-  TableColumn,
-  TableColumns,
-  TableColumnsRecord,
-  ColumnType,
-} from './columns'
+import type { TableColumn, TableColumns, TableColumnsRecord } from './columns'
 import type { DoPick, MergeRecord, UnionToIntersection } from '@dlovely/utils'
 
 export type TableColumnsName<Columns extends TableColumns> =
@@ -35,22 +30,18 @@ export type InsertColumns<Columns extends TableColumns> = MergeRecord<
       Key,
       never,
       IsRequire<Key, Key['name'], never>
-    >]: ColumnType<Key>
+    >]: Key['type']
   } & {
     [Key in Columns[number] as IsReadOnly<
       Key,
       never,
       IsRequire<Key, never, Key['name']>
-    >]?: ColumnType<Key>
+    >]?: Key['type']
   }
 >
 
 export type UpdateColumns<Columns extends TableColumns> = MergeRecord<{
-  [Key in Columns[number] as IsReadOnly<
-    Key,
-    never,
-    Key['name']
-  >]?: ColumnType<Key>
+  [Key in Columns[number] as IsReadOnly<Key, never, Key['name']>]?: Key['type']
 }>
 
 export type SelectColumns<Columns extends TableColumns> = MergeRecord<
@@ -59,25 +50,25 @@ export type SelectColumns<Columns extends TableColumns> = MergeRecord<
       Key,
       IsExist<Key, Key['name'], never>,
       never
-    >]: ColumnType<Key>
+    >]: Key['type']
   } & {
     readonly [Key in Columns[number] as IsReadOnly<
       Key,
       IsExist<Key, never, Key['name']>,
       never
-    >]?: ColumnType<Key>
+    >]?: Key['type']
   } & {
     [Key in Columns[number] as IsReadOnly<
       Key,
       never,
       IsExist<Key, Key['name'], never>
-    >]: ColumnType<Key>
+    >]: Key['type']
   } & {
     [Key in Columns[number] as IsReadOnly<
       Key,
       never,
       IsExist<Key, never, Key['name']>
-    >]?: ColumnType<Key>
+    >]?: Key['type']
   }
 >
 export type SelectColumnsPick<

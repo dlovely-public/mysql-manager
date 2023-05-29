@@ -20,6 +20,19 @@ describe('insert', () => {
     })
   })
 
+  it('set database', () => {
+    expect(
+      formatInsert({
+        database: 'database',
+        table: 'table',
+        datas: { name: 'Name', age: 18 },
+      })
+    ).toEqual({
+      sql: 'INSERT INTO database.table (name,age) VALUES (?,?)',
+      params: ['Name', 18],
+    })
+  })
+
   it('mutiple', () => {
     expect(
       formatInsert({
