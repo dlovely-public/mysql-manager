@@ -4,6 +4,7 @@ import { formatSql } from '@dlovely/sql-editor'
 import type { SqlWithParams } from '@dlovely/sql-editor'
 import { genConfig } from './config'
 import { genGlobalType } from './auto-type'
+import { Transaction } from './transaction'
 
 export class MysqlServer {
   public readonly type
@@ -51,17 +52,9 @@ export class MysqlServer {
     release: () => void
   }>
   /** 从配置处获取连接 */
+  /* istanbul ignore next -- @preserve */
   public async getConnection() {
     const { active_database } = this
-    /* istanbul ignore else -- @preserve */
-    if (__TEST__)
-      return {
-        active_database,
-        connection: Symbol.for('test') as unknown as Connection,
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        release: () => {},
-      }
-    /* istanbul ignore next -- @preserve */
     if (this.type === 'pool') {
       if (!this._pool) this._pool = createPool(this.config)
       const connection = await this._pool.getConnection()
@@ -104,6 +97,13 @@ export class MysqlServer {
     const [result] = await connection.execute(sql, params)
     release()
     return result as any
+  }
+
+  /** 调用连接并获取事务实例 */
+  /* istanbul ignore next -- @preserve */
+  public async transaction() {
+    const { connection } = await this.getConnection()
+    return new Transaction(this.type, connection)
   }
 }
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { execute } from './mysql-server'
+import { execute, connection } from './mysql-server'
 import { useServer } from '../src/mysql'
 
 describe('mysql', () => {
@@ -33,10 +33,13 @@ describe('mysql', () => {
 
   it('get connection', async ({ expect }) => {
     const server = useServer()
-    const { active_database, connection, release } =
-      await server.getConnection()
+    const {
+      active_database,
+      connection: _connection,
+      release,
+    } = await server.getConnection()
     expect(active_database).toBe('test')
-    expect(connection).toBe(Symbol.for('test'))
+    expect(_connection).toBe(connection)
     expect(release).toBeDefined()
     release()
   })
