@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Table, useServer } from '@dlovely/mysql'
 
 export const mysql = useServer()

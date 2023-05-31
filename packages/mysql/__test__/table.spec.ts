@@ -52,6 +52,7 @@ describe('Table', () => {
   it('select', async ({ expect }) => {
     // @ts-ignore
     const table = new Table('database', 'table')
+    // @ts-ignore
     await table.select(['id'], ' WHERE id = 1')
     expect(execute).toBeCalledWith(
       {
