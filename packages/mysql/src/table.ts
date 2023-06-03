@@ -2,15 +2,10 @@ import {
   Delete,
   Update,
   Select,
-  Create,
-  TableColumn,
   TableColumns,
   InsertColumns,
   UpdateColumns,
   SelectColumnsPick,
-  ColumnsName,
-  TableColumnsRecord,
-  createSql,
 } from '@dlovely/sql-editor'
 import {
   formatInsert,
@@ -19,33 +14,57 @@ import {
   formatSelect,
   formatCreate,
 } from '@dlovely/sql-editor'
-import { DataBase } from './database'
+import type { MergeRecord, Split, UnionToTuple } from '@dlovely/utils'
 import type { OkPacket } from 'mysql2'
-import { JoinTable, JoinType } from './join-table'
+import { useServer } from './mysql'
+// import { JoinTable, JoinType } from './join-table.tss'
+import { tables_control } from './file-control'
 
-export class Table<Name extends string, Columns extends TableColumns> {
-  public readonly server
-  constructor(
-    public readonly database: DataBase,
-    public readonly name: Name,
-    columns: Columns
-  ) {
-    this.server = database.server
-    const column_cache = new Set<string>()
-    for (const column of columns) {
-      if (column_cache.has(column.name)) continue
-      this.columns.push(column)
-      column_cache.add(column.name)
-      if (column.type === 'json') {
-        this._json_keys.set(column.name, column.default)
-      }
-    }
+export class Table<
+  DB extends keyof MySql.DataBase,
+  Name extends keyof MySql.DataBase[DB] & string,
+  // @ts-ignore
+  Columns extends TableColumns = GenTableColumns<DB, Name>
+> {
+  constructor(public readonly database: DB, public readonly name: Name) {
+    this._json_keys = new Map<string, string>()
   }
-  public readonly columns = [] as TableColumn[]
+  private readonly _json_keys
 
-  private readonly _json_keys = new Map<string, string>()
-  public get json_keys() {
-    return [...this._json_keys.keys()]
+  public async insert(...datas: InsertColumns<Columns>[]): Promise<OkPacket> {
+    const server = useServer()
+    const sql = formatInsert({
+      table: this.name,
+      datas,
+      json_key: this._json_keys,
+    })
+    const result = await server.execute(sql, this.database)
+    return result
+  }
+
+  public delete(where: Delete.Options['where']): Promise<OkPacket> {
+    const server = useServer()
+    const sql = formatDelete({
+      table: this.name,
+      where,
+    })
+    const result = server.execute(sql, this.database)
+    return result
+  }
+
+  public update(
+    data: UpdateColumns<Columns>,
+    where?: Update.Options['where']
+  ): Promise<OkPacket> {
+    const server = useServer()
+    const sql = formatUpdate({
+      table: this.name,
+      data,
+      where,
+      json_key: this._json_keys,
+    })
+    const result = server.execute(sql, this.database)
+    return result
   }
 
   public select<Column extends Columns[number]['name']>(
@@ -53,6 +72,7 @@ export class Table<Name extends string, Columns extends TableColumns> {
     where?: Select.Options['where'],
     options: Omit<Select.Options, 'table' | 'columns' | 'where'> = {}
   ): Promise<SelectColumnsPick<Columns, Column>[]> {
+    const server = useServer()
     // TODO 对columns进行校验
     const sql = formatSelect({
       ...options,
@@ -60,114 +80,52 @@ export class Table<Name extends string, Columns extends TableColumns> {
       columns,
       where,
     })
-    return this.server.execute<SelectColumnsPick<Columns, Column>>(sql)
+    return server.execute<SelectColumnsPick<Columns, Column>>(
+      sql,
+      this.database
+    )
   }
 
-  public insert(...datas: InsertColumns<Columns>[]): Promise<OkPacket> {
-    const sql = formatInsert({
-      table: this.name,
-      datas,
-      json_key: this._json_keys,
-    })
-    return this.server.execute(sql)
+  // ! 未完成
+  /* istanbul ignore next -- @preserve */
+  public async create() {
+    const server = useServer()
+    const sql = ``
+    const result = await server.execute(sql, this.database)
+    if (__DEV__ && !__TEST__) {
+      const table = tables_control.get(this.database, this.name)
+      table.load
+    }
+    return result
   }
 
-  public update(
-    data: UpdateColumns<Columns>,
-    where?: Update.Options['where']
-  ): Promise<OkPacket> {
-    const sql = formatUpdate({
-      table: this.name,
-      data,
-      where,
-      json_key: this._json_keys,
-    })
-    return this.server.execute(sql)
+  public async truncate() {
+    const server = useServer()
+    const sql = `TRUNCATE TABLE ${this.name}`
+    const result = await server.execute(sql, this.database)
+    return result
   }
 
-  public delete(where: Delete.Options['where']): Promise<OkPacket> {
-    const sql = formatDelete({
-      table: this.name,
-      where,
-    })
-    return this.server.execute(sql)
-  }
-
-  public create(options: Omit<Create.Options, 'name' | 'database'>) {
-    const sql = formatCreate({
-      ...options,
-      name: this.name,
-      database: this.database.name,
-    })
-    return this.server.execute(sql)
-  }
-
-  public truncate() {
-    return this.server.execute(createSql(`TRUNCATE TABLE ${this.name}`))
-  }
-  public drop() {
-    return this.server.execute(createSql(`DROP TABLE ${this.name}`))
-  }
-
-  public join<
-    CR extends TableColumnsRecord = never,
-    N extends string = never,
-    C extends TableColumns = never
-  >(
-    table: Table<N, C> | JoinTable<any, any, any, any, any, any, CR>,
-    key: ColumnsName<C, CR>,
-    self_key: ColumnsName<Columns, never>,
-    type: JoinType = JoinType.INNER
-  ) {
-    const join_table = new JoinTable(
-      this.server,
-      this,
-      self_key,
-      table,
-      key,
-      type
-    ) as JoinTable<never, CR, Name, Columns, N, C>
-    return join_table
-  }
-  public leftJoin<
-    CR extends TableColumnsRecord = never,
-    N extends string = never,
-    C extends TableColumns = never
-  >(
-    table: Table<N, C> | JoinTable<any, any, any, any, any, any, CR>,
-    key: ColumnsName<C, CR>,
-    self_key: ColumnsName<Columns, never>
-  ) {
-    return this.join(table, key, self_key, JoinType.LEFT)
-  }
-  public rightJoin<
-    CR extends TableColumnsRecord = never,
-    N extends string = never,
-    C extends TableColumns = never
-  >(
-    table: Table<N, C> | JoinTable<any, any, any, any, any, any, CR>,
-    key: ColumnsName<C, CR>,
-    self_key: ColumnsName<Columns, never>
-  ) {
-    return this.join(table, key, self_key, JoinType.RIGHT)
-  }
-  public fullJoin<
-    CR extends TableColumnsRecord = never,
-    N extends string = never,
-    C extends TableColumns = never
-  >(
-    table: Table<N, C> | JoinTable<any, any, any, any, any, any, CR>,
-    key: ColumnsName<C, CR>,
-    self_key: ColumnsName<Columns, never>
-  ) {
-    return this.join(table, key, self_key, JoinType.FULL)
+  public async drop() {
+    const server = useServer()
+    const sql = `DROP TABLE ${this.name}`
+    const result = await server.execute(sql, this.database)
+    /* istanbul ignore next -- @preserve */
+    if (__DEV__ && !__TEST__) tables_control.delete(this.database, this.name)
+    return result
   }
 }
 
-export const createTable = <Columns extends TableColumns>(
-  database: DataBase,
-  name: string,
-  columns: Columns
-) => database.createTable(name, columns)
-
 export type { OkPacket }
+
+type GenTableColumns<
+  DB extends keyof MySql.DataBase,
+  Name extends Split<keyof MySql.Table>[1],
+  Columns = MySql.DataBase[DB][Name]
+> = UnionToTuple<
+  MergeRecord<
+    {
+      [Key in keyof Columns]: Columns[Key] & { name: Key }
+    }[keyof Columns]
+  >
+>

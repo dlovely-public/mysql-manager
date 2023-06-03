@@ -2,7 +2,15 @@
   "include": [
     "packages/mysql/src/global.d.ts",
     "packages/*/src/**/*.ts",
-    "packages/*/__test__/**/*.ts"
+    "packages/*/__test__/**/*.ts",
+    "playground/*/src/**/*.ts",
+    "playground/*/__test__/**/*.ts",
+    "packages/mysql/src/database.ts",
+    "packages/mysql/src/join-table.tss",
+    "packages/mysql/src/table.ts",
+    "playground/mysql/.mysql/global.d.ts",
+    "playground/mysql/mysql.config.*",
+    "packages/mysql/__test__/join-table.spec.tss"
   ],
   "exclude": [],
   "compilerOptions": {
@@ -38,5 +46,11 @@
     "jsx": "preserve",
     "lib": ["esnext", "dom"],
     "types": ["vitest", "node", "vitest/globals"]
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS",
+      "moduleResolution": "node"
+    }
   }
 }

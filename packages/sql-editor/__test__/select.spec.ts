@@ -17,6 +17,13 @@ describe('select', () => {
     })
   })
 
+  it('set database', () => {
+    expect(formatSelect({ database: 'database', table: 'table' })).toEqual({
+      sql: 'SELECT * FROM database.table',
+      params: [],
+    })
+  })
+
   it('distinct', () => {
     expect(formatSelect({ table: 'table', distinct: true })).toEqual({
       sql: 'SELECT * FROM table',

@@ -1,12 +1,17 @@
 import { describe, it, expect } from 'vitest'
-import { mergeConfig, default_config } from '../src/config'
+import { genConfig } from '../src/config'
 
 describe('config', () => {
   it('default', () => {
-    expect(default_config).toEqual({
-      host: 'localhost',
-      port: 3306,
+    const config = genConfig()
+    expect(config).toEqual({
+      type: 'pool',
+      config: {
+        host: 'localhost',
+        port: 3306,
+        user: 'localhost',
+        password: undefined,
+      },
     })
-    expect(mergeConfig()).toBe(default_config)
   })
 })

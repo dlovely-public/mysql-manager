@@ -5,6 +5,7 @@ import { type Where, formatWhereOptions } from './where'
 
 export namespace Select {
   export interface Options {
+    database?: string
     table: string
     distinct?: boolean
     columns?: string[]
@@ -26,14 +27,15 @@ export namespace Select {
 }
 
 export const formatSelect = (options: Select.Options): SqlWithParams => {
-  const { table, columns, distinct, order_by, where, range } = options
+  const { database, table, columns, distinct, order_by, where, range } = options
   const distinct_sql = formatDistinct(columns?.length ? distinct : undefined)
   const columns_sql = formatColums(columns)
   const { sql: where_sql, params: where_params } = formatWhereOptions(where)
   const order_by_sql = formatOrderBy(order_by)
   const { sql: range_sql, params: range_params } = formatRange(range)
+  const _table = database ? `${database}.${table}` : table
   return createSql(
-    `SELECT${distinct_sql}${columns_sql} FROM ${table}${where_sql}${order_by_sql}${range_sql}`,
+    `SELECT${distinct_sql}${columns_sql} FROM ${_table}${where_sql}${order_by_sql}${range_sql}`,
     ...where_params,
     ...range_params
   )

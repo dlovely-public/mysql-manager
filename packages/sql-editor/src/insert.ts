@@ -3,6 +3,7 @@ import type { SqlWithParams } from './virtual-sql'
 
 export namespace Insert {
   export interface Options {
+    database?: string
     table: string
     datas: Record<string, unknown> | Record<string, unknown>[]
     json_key?: Map<string, string>
@@ -15,7 +16,7 @@ interface InsertContext {
 }
 
 export const formatInsert = (options: Insert.Options): SqlWithParams => {
-  const { table, datas, json_key } = options
+  const { database, table, datas, json_key } = options
   const ctx: InsertContext = { insert_amount: 0, insert_data: new Map() }
   if (isArray(datas)) {
     for (const data of datas) {
@@ -45,8 +46,9 @@ export const formatInsert = (options: Insert.Options): SqlWithParams => {
     }
   })
   const params = vals.flat()
+  const _table = database ? `${database}.${table}` : table
   return {
-    sql: `INSERT INTO ${table} (${keys.join()}) VALUES ${fill(
+    sql: `INSERT INTO ${_table} (${keys.join()}) VALUES ${fill(
       ctx.insert_amount,
       `(${fill(keys.length)})`
     )}`,

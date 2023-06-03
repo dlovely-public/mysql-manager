@@ -1,0 +1,21 @@
+{
+  "name": "demo-mysql-koa",
+  "private": true,
+  "description": "mysql管理器试验场",
+  "scripts": {
+    "dev": "nodemon ./src/index"
+  },
+  "author": {
+    "name": "MZ-Dlovely",
+    "email": "591562538@qq.com"
+  },
+  "dependencies": {
+    "@dlovely/mysql": "workspace:^",
+    "koa": "^2.14.2"
+  },
+  "devDependencies": {
+    "@types/koa": "^2.13.6",
+    "nodemon": "^2.0.22",
+    "ts-node": "^10.9.1"
+  }
+}
