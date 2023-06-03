@@ -1,49 +1,53 @@
 import { describe, it, expect } from 'vitest'
-import { execute } from './mysql-server'
-import { createMysqlServer, createMysqlPool } from '../src/mysql'
-import { default_config } from '../src/config'
+import { execute, connection } from './mysql-server'
+import { useServer } from '../src/mysql'
 
 describe('mysql', () => {
-  it('extra database config', () => {
-    const server = createMysqlServer({ database: 'database' })
-    expect(server.config).toEqual(default_config)
-    const pool = createMysqlPool({ database: 'database' })
-    expect(pool.config).toEqual(default_config)
+  it('use default server', () => {
+    const server = useServer()
+    expect(server.type).toBe('pool')
+    expect(server.config).toEqual({
+      host: 'localhost',
+      port: 3306,
+      user: 'localhost',
+      password: undefined,
+    })
+    expect(server.options).toBeUndefined()
+    expect(server.json_key).toBeUndefined()
+    expect(server.active_database).toBeUndefined()
   })
 
-  it('server connection', async ({ expect }) => {
-    const server = createMysqlServer()
-    const { connection, release } = await server.getConnection()
-    expect(connection).toBe(Symbol.for('test connection'))
-    expect(connection).toBe(server.connection)
+  it('change database', () => {
+    const server = useServer()
+    expect(server.active_database).toBeUndefined()
+    expect(server.config.database).toBeUndefined()
+    server.use('test')
+    expect(server.active_database).toBeUndefined()
+    expect(server.config.database).toBeUndefined()
+    // @ts-ignore
+    server.type = 'connection'
+    server.use('test')
+    expect(server.active_database).toBe('test')
+    expect(server.config.database).toBe('test')
+  })
+
+  it('get connection', async ({ expect }) => {
+    const server = useServer()
+    const {
+      active_database,
+      connection: _connection,
+      release,
+    } = await server.getConnection()
+    expect(active_database).toBe('test')
+    expect(_connection).toBe(connection)
+    expect(release).toBeDefined()
     release()
-    expect(server.connection).toBeUndefined()
   })
 
-  it('mysql server', () => {
-    const server_1 = createMysqlServer()
-    const server_2 = createMysqlServer()
-    expect(server_1).toBe(server_2)
-
-    const server_3 = createMysqlServer({ user: 'root' })
-    expect(server_3).toBe(server_1)
-    expect(server_3).toBe(server_2)
-  })
-
-  it('mysql pool', () => {
-    const pool_1 = createMysqlPool()
-    const pool_2 = createMysqlPool()
-    expect(pool_1).toBe(pool_2)
-
-    const pool_3 = createMysqlPool({ user: 'root' })
-    expect(pool_3).toBe(pool_1)
-    expect(pool_3).toBe(pool_2)
-  })
-
-  it('mysql execute', async ({ expect }) => {
-    const server = createMysqlServer()
-    const result = await server.execute({ sql: 'SELECT 1' })
-    expect(execute).toBeCalledWith({ sql: 'SELECT 1' })
-    expect(result).toStrictEqual({ sql: 'SELECT 1', params: [] })
+  it('execute', async ({ expect }) => {
+    const server = useServer()
+    const result = await server.execute('test')
+    expect(execute).toBeCalledWith('test')
+    expect(result).toEqual({ sql: 'test', params: [] })
   })
 })

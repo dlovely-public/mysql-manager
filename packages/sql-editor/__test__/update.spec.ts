@@ -11,6 +11,19 @@ describe('update', () => {
     })
   })
 
+  it('set database', () => {
+    expect(
+      formatUpdate({
+        database: 'database',
+        table: 'table',
+        data: { name: 'Name', age: 18 },
+      })
+    ).toEqual({
+      sql: 'UPDATE database.table SET name=?,age=?',
+      params: ['Name', 18],
+    })
+  })
+
   it('with json', () => {
     expect(
       formatUpdate({
