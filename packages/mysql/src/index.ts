@@ -9,5 +9,4 @@ export { DataBase } from './database'
 export { Table } from './table'
 export type { OkPacket } from './table'
 
-// export { createJoinTable, JoinType } from './join-table'
-// export type { JoinTable } from './join-table'
+export { JoinTable, JoinType } from './join-table'

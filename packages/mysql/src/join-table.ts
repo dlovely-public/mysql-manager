@@ -8,41 +8,37 @@ import type {
 } from '@dlovely/sql-editor'
 import { formatJoinSelect } from '@dlovely/sql-editor'
 import type { MergeRecordWithoutNever } from '@dlovely/utils'
-import type { Mysql } from './mysql'
+import { useServer } from './mysql'
 import type { Table } from './table'
 
 export class JoinTable<
+  DB extends keyof MySql.DataBase,
   LCR extends TableColumnsRecord = never,
   RCR extends TableColumnsRecord = never,
-  LN extends string = never,
+  LN extends keyof MySql.DataBase[DB] & string = never,
   LC extends TableColumns = never,
-  RN extends string = never,
+  RN extends keyof MySql.DataBase[DB] & string = never,
   RC extends TableColumns = never,
   TCR extends TableColumnsRecord = MergeRecordWithoutNever<
     [LCR, RCR, Record<LN, LC>, Record<RN, RC>]
   >
 > {
   constructor(
-    public readonly server: Mysql,
     public readonly left_table:
-      | Table<LN, LC>
-      | JoinTable<any, any, any, any, any, any, LCR>,
+      | Table<DB, LN, LC>
+      // @ts-ignore
+      | JoinTable<any, any, any, any, any, any, any, LCR>,
     public readonly left_key: ColumnsName<LC, LCR>,
     public readonly right_table:
-      | Table<RN, RC>
-      | JoinTable<any, any, any, any, any, any, RCR>,
+      | Table<DB, RN, RC>
+      // @ts-ignore
+      | JoinTable<any, any, any, any, any, any, any, RCR>,
     public readonly right_key: ColumnsName<RC, RCR>,
     public readonly join_type: JoinType
   ) {
     if (
-      left_table.server !== this.server ||
-      right_table.server !== this.server
-    ) {
-      throw new Error('JoinTable must be in the same server')
-    }
-    if (
-      (left_table instanceof JoinTable && left_table.used) ||
-      (right_table instanceof JoinTable && right_table.used)
+      (left_table instanceof JoinTable && left_table._used) ||
+      (right_table instanceof JoinTable && right_table._used)
     ) {
       throw new Error('JoinTable has been used')
     }
@@ -75,30 +71,35 @@ export class JoinTable<
 
   public join<
     CR extends TableColumnsRecord = never,
-    N extends string = never,
+    N extends keyof MySql.DataBase[DB] & string = never,
     C extends TableColumns = never
   >(
-    table: Table<N, C> | JoinTable<any, any, any, any, any, any, CR>,
+    table:
+      | Table<DB, N, C>
+      // @ts-ignore
+      | JoinTable<any, any, any, any, any, any, any, CR>,
     key: ColumnsName<C, CR>,
     self_key: ColumnsName<never, TCR>,
     type: JoinType = JoinType.INNER
   ) {
     const join_table = new JoinTable(
-      this.server,
       this,
       self_key,
       table,
       key,
       type
-    ) as JoinTable<TCR, CR, never, never, N, C>
+    ) as JoinTable<DB, TCR, CR, never, never, N, C>
     return join_table
   }
   public leftJoin<
     CR extends TableColumnsRecord = never,
-    N extends string = never,
+    N extends keyof MySql.DataBase[DB] & string = never,
     C extends TableColumns = never
   >(
-    table: Table<N, C> | JoinTable<any, any, any, any, any, any, CR>,
+    table:
+      | Table<DB, N, C>
+      // @ts-ignore
+      | JoinTable<any, any, any, any, any, any, any, CR>,
     key: ColumnsName<C, CR>,
     self_key: ColumnsName<never, TCR>
   ) {
@@ -106,10 +107,13 @@ export class JoinTable<
   }
   public rightJoin<
     CR extends TableColumnsRecord = never,
-    N extends string = never,
+    N extends keyof MySql.DataBase[DB] & string = never,
     C extends TableColumns = never
   >(
-    table: Table<N, C> | JoinTable<any, any, any, any, any, any, CR>,
+    table:
+      | Table<DB, N, C>
+      // @ts-ignore
+      | JoinTable<any, any, any, any, any, any, any, CR>,
     key: ColumnsName<C, CR>,
     self_key: ColumnsName<never, TCR>
   ) {
@@ -117,21 +121,25 @@ export class JoinTable<
   }
   public fullJoin<
     CR extends TableColumnsRecord = never,
-    N extends string = never,
+    N extends keyof MySql.DataBase[DB] & string = never,
     C extends TableColumns = never
   >(
-    table: Table<N, C> | JoinTable<any, any, any, any, any, any, CR>,
+    table:
+      | Table<DB, N, C>
+      // @ts-ignore
+      | JoinTable<any, any, any, any, any, any, any, CR>,
     key: ColumnsName<C, CR>,
     self_key: ColumnsName<never, TCR>
   ) {
     return this.join(table, key, self_key, JoinType.FULL)
   }
 
-  public select<Column extends Partial<TableColumnsRecordMap<TCR>>>(
+  public async select<Column extends Partial<TableColumnsRecordMap<TCR>>>(
     columns?: Column,
     where?: Select.Options['where'],
     options: Omit<Select.Options, 'table' | 'columns' | 'where'> = {}
   ): Promise<SelectColumnsRecord<TCR, Column>[]> {
+    const server = useServer()
     const sql = formatJoinSelect({
       ...options,
       table: this.name,
@@ -139,36 +147,13 @@ export class JoinTable<
       columns,
       where,
     })
-    return this.server.execute<SelectColumnsRecord<TCR, Column>>(sql)
+    const result = await server.execute<SelectColumnsRecord<TCR, Column>>(sql)
+    return result
   }
 
-  // public get __showTCR(): TCR {
-  //   return null as any
-  // }
-}
-
-export const createJoinTable = <
-  LCR extends TableColumnsRecord = never,
-  RCR extends TableColumnsRecord = never,
-  LN extends string = never,
-  LC extends TableColumns = never,
-  RN extends string = never,
-  RC extends TableColumns = never
->(
-  left_table: Table<LN, LC> | JoinTable<any, any, any, any, any, any, LCR>,
-  left_key: ColumnsName<LC, LCR>,
-  right_table: Table<RN, RC> | JoinTable<any, any, any, any, any, any, RCR>,
-  right_key: ColumnsName<RC, RCR>,
-  join_type: JoinType
-) => {
-  return new JoinTable(
-    left_table.server,
-    left_table,
-    left_key,
-    right_table,
-    right_key,
-    join_type
-  )
+  public get __showTCR(): TCR {
+    return null as any
+  }
 }
 
 export enum JoinType {
