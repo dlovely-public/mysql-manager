@@ -1,6 +1,6 @@
 {
   "name": "@dlovely/sql-editor",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "sql编辑器",
   "main": "index.js",
   "module": "dist/index.mjs",
@@ -42,12 +42,12 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@dlovely/utils": ">=1.0.1"
+    "@dlovely/utils": ">=1.0.2"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.34.9"
   },
   "peerDependencies": {
-    "@dlovely/utils": ">=1.0.1"
+    "@dlovely/utils": ">=1.0.2"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@dlovely/mysql",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "对mysql的简易连接，能创建数据库、数据表管理，并使用sql编辑器",
   "main": "index.js",
   "module": "dist/index.mjs",
@@ -43,16 +43,16 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@dlovely/sql-editor": ">=1.0.1",
-    "@dlovely/utils": ">=1.0.1",
+    "@dlovely/sql-editor": ">=1.0.2",
+    "@dlovely/utils": ">=1.0.2",
     "mysql2": "^3.2.3"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.34.9"
   },
   "peerDependencies": {
-    "@dlovely/sql-editor": ">=1.0.1",
-    "@dlovely/utils": ">=1.0.1",
+    "@dlovely/sql-editor": ">=1.0.2",
+    "@dlovely/utils": ">=1.0.2",
     "mysql2": "^3.2.3"
   }
 }
