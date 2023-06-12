@@ -42,7 +42,7 @@ export const genGlobalType = /*#__PURE__*/ async ({
   }
 }
 
-function columnTypeToTypeScriptType(
+export /*#__PURE__*/ function columnTypeToTypeScriptType(
   DATA_TYPE: string,
   COLUMN_TYPE: string,
   json_key?: KeyType
@@ -97,7 +97,7 @@ function columnTypeToTypeScriptType(
   }
 }
 
-function genTypeFromKeyType(json_key: string | KeyType) {
+export /*#__PURE__*/ function genTypeFromKeyType(json_key: string | KeyType) {
   if (typeof json_key === 'string') return json_key
   const { string, number, records, is_array } = json_key
   const type = [] as string[]

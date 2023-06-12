@@ -19,7 +19,7 @@
     "cleanup": "rimraf -rf node_modules && rimraf -rf dist",
     "release": "node scripts/release.mjs",
     "preinstall": "node ./scripts/preinstall.js",
-    "postinstall": "simple-git-hooks"
+    "postinstall": "simple-git-hooks && node ./scripts/postinstall.js"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged && pnpm check",

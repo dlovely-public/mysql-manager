@@ -4,76 +4,88 @@ import { Table } from '../src/table'
 
 describe('Table', () => {
   it('default', () => {
-    // @ts-ignore
-    const table = new Table('database', 'table')
-    expect(table.database).toBe('database')
-    expect(table.name).toBe('table')
+    const table = new Table('database1', 'table1')
+    expect(table.database).toBe('database1')
+    expect(table.name).toBe('table1')
   })
 
   it('insert', async ({ expect }) => {
-    // @ts-ignore
-    const table = new Table('database', 'table')
-    await table.insert({ id: 1, name: 'name' })
+    const table = new Table('database1', 'table1')
+    await table.insert({ column3: 3, column4: 'value4' })
     expect(execute).toBeCalledWith(
       {
-        sql: 'INSERT INTO table (id,name) VALUES (?,?)',
-        params: [1, 'name'],
+        sql: 'INSERT INTO table1 (column3,column4) VALUES (?,?)',
+        params: [3, 'value4'],
       },
-      'database'
+      'database1'
     )
   })
 
   it('delete', async ({ expect }) => {
-    // @ts-ignore
-    const table = new Table('database', 'table')
+    const table = new Table('database1', 'table1')
     await table.delete(' WHERE id = 1')
     expect(execute).toBeCalledWith(
       {
-        sql: 'DELETE FROM table WHERE id = 1',
+        sql: 'DELETE FROM table1 WHERE id = 1',
         params: [],
       },
-      'database'
+      'database1'
     )
   })
 
   it('update', async ({ expect }) => {
-    // @ts-ignore
-    const table = new Table('database', 'table')
-    await table.update({ name: 'name' }, ' WHERE id = 1')
+    const table = new Table('database1', 'table1')
+    await table.update({ column3: 3 }, ' WHERE id = 1')
     expect(execute).toBeCalledWith(
       {
-        sql: 'UPDATE table SET name=? WHERE id = 1',
-        params: ['name'],
+        sql: 'UPDATE table1 SET column3=? WHERE id = 1',
+        params: [3],
       },
-      'database'
+      'database1'
     )
   })
 
   it('select', async ({ expect }) => {
-    // @ts-ignore
-    const table = new Table('database', 'table')
-    // @ts-ignore
-    await table.select(['id'], ' WHERE id = 1')
+    const table = new Table('database1', 'table1')
+    await table.select(['column1'], ' WHERE id = 1')
     expect(execute).toBeCalledWith(
       {
-        sql: 'SELECT id FROM table WHERE id = 1',
+        sql: 'SELECT column1 FROM table1 WHERE id = 1',
         params: [],
       },
-      'database'
+      'database1'
+    )
+  })
+
+  it('create', async ({ expect }) => {
+    const table = new Table('database1', 'table1')
+    await table.create([
+      { name: 'column1', type: 'int' },
+      { name: 'column2', type: 'varchar', length: 50 },
+    ])
+    expect(execute).toBeCalledWith(
+      {
+        sql: `\
+-- ?.? definition
+CREATE TABLE ? (
+  ? int,
+  ? varchar(50)
+)`,
+        params: ['database1', 'table1', 'table1', 'column1', 'column2'],
+      },
+      'database1'
     )
   })
 
   it('truncate', async ({ expect }) => {
-    // @ts-ignore
-    const table = new Table('database', 'table')
+    const table = new Table('database1', 'table1')
     await table.truncate()
-    expect(execute).toBeCalledWith('TRUNCATE TABLE table', 'database')
+    expect(execute).toBeCalledWith('TRUNCATE TABLE table1', 'database1')
   })
 
   it('drop', async ({ expect }) => {
-    // @ts-ignore
-    const table = new Table('database', 'table')
+    const table = new Table('database1', 'table1')
     await table.drop()
-    expect(execute).toBeCalledWith('DROP TABLE table', 'database')
+    expect(execute).toBeCalledWith('DROP TABLE table1', 'database1')
   })
 })

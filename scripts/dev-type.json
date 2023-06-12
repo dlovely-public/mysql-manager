@@ -1,0 +1,92 @@
+{
+  "database1": {
+    "table1": {
+      "column1": {
+        "type": "number",
+        "readonly": true,
+        "not_null": true,
+        "has_defa": false
+      },
+      "column2": {
+        "type": "Date",
+        "readonly": true,
+        "not_null": false,
+        "has_defa": true
+      },
+      "column3": {
+        "type": "number",
+        "readonly": false,
+        "not_null": false,
+        "has_defa": false
+      },
+      "column4": {
+        "type": "string",
+        "readonly": false,
+        "not_null": true,
+        "has_defa": false
+      },
+      "column5": {
+        "type": "string",
+        "readonly": false,
+        "not_null": false,
+        "has_defa": true
+      }
+    },
+    "table2": {
+      "column1": {
+        "type": "'none' | 'admin' | 'super'",
+        "readonly": false,
+        "not_null": true,
+        "has_defa": false
+      },
+      "column2": {
+        "type": "{ key1: string; key2: number }[]",
+        "readonly": false,
+        "not_null": true,
+        "has_defa": false
+      },
+      "column3": {
+        "type": "{ key1: string; key2: number }",
+        "readonly": false,
+        "not_null": true,
+        "has_defa": false
+      }
+    }
+  },
+  "database2": {
+    "table1": {
+      "column1": {
+        "type": "string",
+        "readonly": false,
+        "not_null": true,
+        "has_defa": false
+      },
+      "column2": {
+        "type": "string",
+        "readonly": false,
+        "not_null": false,
+        "has_defa": true
+      }
+    },
+    "table2": {
+      "column1": {
+        "type": "'0' | '1' | '2' | '3'",
+        "readonly": false,
+        "not_null": true,
+        "has_defa": false
+      },
+      "column2": {
+        "type": "{ key1: string; key2: number }[]",
+        "readonly": false,
+        "not_null": true,
+        "has_defa": false
+      },
+      "column3": {
+        "type": "{ key1: string; key2: number }",
+        "readonly": false,
+        "not_null": true,
+        "has_defa": false
+      }
+    }
+  }
+}
