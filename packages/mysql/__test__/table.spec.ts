@@ -57,6 +57,26 @@ describe('Table', () => {
     )
   })
 
+  it('create', async ({ expect }) => {
+    const table = new Table('database1', 'table1')
+    await table.create([
+      { name: 'column1', type: 'int' },
+      { name: 'column2', type: 'varchar', length: 50 },
+    ])
+    expect(execute).toBeCalledWith(
+      {
+        sql: `\
+-- ?.? definition
+CREATE TABLE ? (
+  ? int,
+  ? varchar(50)
+)`,
+        params: ['database1', 'table1', 'table1', 'column1', 'column2'],
+      },
+      'database1'
+    )
+  })
+
   it('truncate', async ({ expect }) => {
     const table = new Table('database1', 'table1')
     await table.truncate()
